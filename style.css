@@ -1,0 +1,26 @@
+/* Phase 1 & 2: Page visibility logic */
+.page { 
+    display: none; 
+} 
+
+.page.active { 
+    display: block; 
+} 
+
+/* Phase 1: Authentication-based visibility */
+body.not-authenticated .role-logged-in { 
+    display: none; 
+} 
+
+body.authenticated .role-logged-out { 
+    display: none; 
+} 
+
+/* Phase 1: Role-based access (Admin only) */
+.role-admin { 
+    display: none; 
+} 
+
+body.is-admin .role-admin { 
+    display: block; 
+} 
