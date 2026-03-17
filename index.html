@@ -2,168 +2,604 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Full-Stack App (Student Build)</title> <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> <style>
-        /* Phase 1: CSS Rules */
-        .page { display: none; }
-        .page.active { display: block; }
-
-        /* Auth State Toggling */
-        body.not-authenticated .role-logged-in { display: none; }
-        body.authenticated .role-logged-out { display: none; }
-        
-        /* Admin Role Restrictions */
-        .role-admin { display: none; } 
-        body.is-admin .role-admin { display: block; }
-
-        /* Optional spacing for the prototype */
-        main { min-height: 80vh; }
-        .navbar-brand { font-weight: bold; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIT-U CCS Sit-in System</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="not-authenticated"> <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="#/">Full-Stack App (Karl Baring)</a> <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <div class="navbar-nav ms-auto">
-                    <a class="nav-link role-logged-out" href="#/login">Login</a>
-                    <a class="nav-link role-logged-out" href="#/register">Register</a>
-
-                    <a class="nav-link role-admin" href="#/employees">Employees</a>
-                    <a class="nav-link role-admin" href="#/accounts">Accounts</a>
-                    <a class="nav-link role-admin" href="#/departments">Departments</a>
-
-                    <div class="nav-item dropdown role-logged-in">
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                            User Menu
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#/profile">Profile</a></li>
-                            <li><a class="dropdown-item" href="#/requests">My Requests</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="#" onclick="logout()">Logout</a></li>
-                        </ul>
-                    </div>
+<body>
+    <div id="auth-container">
+        <!-- LOGIN PAGE -->
+        <div id="login-page" class="auth-page">
+            <div class="auth-box">
+                <div class="auth-header">
+                    <h1>CIT-U CCS Lab</h1>
+                    <p>Sit-in Management System</p>
+                </div>
+                <div class="auth-form">
+                    <h2>Student Login</h2>
+                    <input type="text" id="login-id" placeholder="Enter Student ID (e.g., 2024-0001)" maxlength="50">
+                    <input type="password" id="login-password" placeholder="Enter Password">
+                    <button onclick="performLogin()" class="btn-login">Login</button>
+                    <p class="auth-switch">Don't have an account? <button onclick="switchToRegister()" class="btn-link">Register here</button></p>
                 </div>
             </div>
         </div>
+
+        <!-- REGISTRATION PAGE -->
+        <div id="register-page" class="auth-page" style="display: none;">
+            <div class="auth-box scrollable-auth">
+                <div class="auth-header">
+                    <h1>CIT-U CCS Lab</h1>
+                    <p>Sit-in Management System</p>
+                </div>
+                <div class="auth-form">
+                    <h2>Create Account</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <input type="text" id="reg-id" placeholder="Student ID (e.g., 2024-0001)" maxlength="50" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <input type="text" id="reg-firstname" placeholder="First Name" maxlength="50" required>
+                        </div>
+                        <div class="form-col">
+                            <input type="text" id="reg-lastname" placeholder="Last Name" maxlength="50" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <input type="email" id="reg-email" placeholder="Email Address" maxlength="100" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <input type="text" id="reg-course" placeholder="Course (e.g., BSCS)" maxlength="50" required>
+                        </div>
+                        <div class="form-col">
+                            <select id="reg-year" required>
+                                <option value="">Select Year Level</option>
+                                <option value="1st Year">1st Year</option>
+                                <option value="2nd Year">2nd Year</option>
+                                <option value="3rd Year">3rd Year</option>
+                                <option value="4th Year">4th Year</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <input type="password" id="reg-password" placeholder="Password (min. 6 characters)" minlength="6" required>
+                        </div>
+                        <div class="form-col">
+                            <input type="password" id="reg-confirm-password" placeholder="Confirm Password" minlength="6" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col full-width">
+                            <label style="font-weight: 600; color: #333; display: block; margin-bottom: 8px;">Account Type:</label>
+                            <div class="role-selector">
+                                <label class="role-option">
+                                    <input type="radio" name="role" value="student" checked>
+                                    <span>Student</span>
+                                </label>
+                                <label class="role-option">
+                                    <input type="radio" name="role" value="admin">
+                                    <span>Admin</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="performRegister()" class="btn-login" style="margin-top: 15px;">Create Account</button>
+                    <p class="auth-switch">Already have an account? <button onclick="switchToLogin()" class="btn-link">Login here</button></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-app" class="main-app" style="display: none;">
+    <!-- Student Navigation -->
+    <nav class="navbar" id="student-navbar">
+        <div class="logo">CIT-U CCS Lab</div>
+        <div class="nav-links">
+            <button onclick="showSection('student-dash')">Student Portal</button>
+            <button onclick="showSection('reservation')">Reservation</button>
+            <button onclick="showSection('history')">History</button>
+            <button onclick="showSection('my-profile')">My Profile</button>
+            <button onclick="logout()" class="btn-logout-nav">Logout</button>
+        </div>
     </nav>
 
-    <main class="container">
-        <section id="home-page" class="page active">
-            <div class="p-5 mb-4 bg-light rounded-3">
-                <div class="container-fluid py-5">
-                    <h1 class="display-5 fw-bold">Welcome to Full-Stack App</h1> <p class="col-md-8 fs-4">A static prototype before backend integration. Simulates:</p> 
-                    <ul>
-                        <li>Email registration & fake verification</li>
-                        <li>Login with JWT-like token simulation</li>
-                        <li>Role-based UI (Admin/User)</li>
-                        <li>CRUD for Employees, Departments, Requests</li>
-                    </ul>
-                    <p class="text-muted small">Note: All data is stored in localStorage. Refresh to reset.</p> 
-                    <a href="#/register" class="btn btn-primary btn-lg">Get Started</a> 
-                </div>
-            </div>
-        </section>
+    <!-- Admin Navigation -->
+    <nav class="navbar" id="admin-navbar" style="display: none;">
+        <div class="logo">CIT-U CCS Admin</div>
+        <div class="nav-links">
+            <button onclick="showSection('admin-dash')">Admin Portal</button>
+            <button onclick="showSection('admin-announcements')">Announcements</button>
+            <button onclick="logout()" class="btn-logout-nav">Logout</button>
+        </div>
+    </nav>
 
-        <section id="register-page" class="page">
-            <div class="card mx-auto" style="max-width: 500px;">
-                <div class="card-body">
-                    <h2>Register Account</h2>
-                    <form id="register-form">
-                        <div class="mb-3">
-                            <label class="form-label">First Name</label> 
-                            <input type="text" id="reg-firstname" class="form-control" required>
+    <main id="main-content">
+        <section id="student-dash" class="section active">
+            <h2>Student Dashboard</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Account Overview</h3>
+                    <div class="account-overview">
+                        <div class="profile-photo-large" id="dashboard-profile-photo">
+                            <div class="profile-placeholder-large">📷</div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Last Name</label>
-                            <input type="text" id="reg-lastname" class="form-control" required>
+                        <div class="account-details">
+                            <p><strong>ID:</strong> <span id="user-id">2024-0001</span></p>
+                            <p><strong>Name:</strong> <span id="user-name">Loading...</span></p>
+                            <p><strong>Email:</strong> <span id="user-email">-</span></p>
+                            <p><strong>Course:</strong> <span id="user-course">-</span></p>
+                            <p><strong>Year:</strong> <span id="user-year">-</span></p>
+                            <p><strong>Remaining Sessions:</strong> <span id="sessions">15</span></p>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" id="reg-email" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Password</label> 
-                            <input type="password" id="reg-pass" class="form-control" minlength="6" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Sign Up</button>
-                        <a href="#/" class="btn btn-outline-secondary">Cancel</a> 
-                    </form>
-                </div>
-            </div>
-        </section>
-
-        <section id="verify-email-page" class="page">
-            <div class="text-center py-5">
-                <h2>Verify Your Email</h2>
-                <p id="verify-msg">A verification link has been sent to your email.</p> 
-                <button class="btn btn-warning mt-3" onclick="simulateVerification()">✔ Simulate Email Verification</button> 
-            </div>
-        </section>
-
-        <section id="login-page" class="page">
-            <div class="card mx-auto" style="max-width: 400px;">
-                <div class="card-body">
-                    <h2>Login</h2>
-                    <form id="login-form">
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" id="login-email" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Password</label>
-                            <input type="password" id="login-pass" class="form-control" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Login</button>
-                    </form>
-                </div>
-            </div>
-        </section>
-
-        <section id="profile-page" class="page">
-            <h2>My Profile</h2>
-            <div class="card">
-                <div class="card-body" id="profile-content">
                     </div>
+                </div>
+                <div class="card">
+                    <h3>Lab Announcements</h3>
+                    <div id="student-announcements">
+                        <p class="no-announcements">No announcements at this time.</p>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <section id="employees-page" class="page">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2>Employees</h2>
-                <button class="btn btn-success" onclick="openEmployeeModal()">+ Add Employee</button>
+        <section id="reservation" class="section">
+            <h2>Make a Reservation</h2>
+            <div class="card">
+                <form id="reservation-form">
+                    <div class="form-group">
+                        <label for="res-id">ID Number:</label>
+                        <input type="text" id="res-id" value="2024-0001" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="res-name">Full Name:</label>
+                        <input type="text" id="res-name" value="John Doe" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="res-purpose">Purpose:</label>
+                        <select id="res-purpose" required>
+                            <option value="">Select Purpose</option>
+                            <option value="C Programming">C Programming</option>
+                            <option value="Java">Java</option>
+                            <option value="Python">Python</option>
+                            <option value="Web Development">Web Development</option>
+                            <option value="Data Structures">Data Structures</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="res-lab">Lab Room:</label>
+                        <select id="res-lab" required>
+                            <option value="">Select Lab Room</option>
+                            <option value="Lab 501">Lab 501</option>
+                            <option value="Lab 502">Lab 502</option>
+                            <option value="Lab 503">Lab 503</option>
+                            <option value="Lab 504">Lab 504</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn-primary" onclick="submitReservation()">Submit</button>
+                </form>
             </div>
-            <table class="table table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th>ID</th><th>Name</th><th>Position</th><th>Dept</th><th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="employee-table-body">
-                    </tbody>
-            </table>
         </section>
 
-        <section id="requests-page" class="page">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2>My Requests</h2>
-                <button class="btn btn-success" onclick="openRequestModal()">+ New Request</button>
-            </div>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Type</th><th>Items</th><th>Status</th><th>Date</th> 
-                    </tr>
-                </thead>
-                <tbody id="request-table-body">
+        <section id="history" class="section">
+            <h2>Your Sit-in History</h2>
+            <div class="card">
+                <table id="history-table" class="history-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Purpose</th>
+                            <th>Lab Room</th>
+                            <th>Login Time</th>
+                            <th>Logout Time</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-body">
+                        <!-- Populated by JavaScript -->
                     </tbody>
-            </table>
+                </table>
+            </div>
+        </section>
+
+        <section id="my-profile" class="section">
+            <h2>My Profile</h2>
+            <div class="profile-container">
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div class="profile-photo-container">
+                            <img id="profile-display-photo" src="" alt="Profile Photo" class="profile-photo" style="display: none;">
+                            <div id="profile-photo-placeholder" class="profile-photo-placeholder">📷</div>
+                        </div>
+                        <div class="profile-info-header">
+                            <h3 id="profile-name">Loading...</h3>
+                            <p id="profile-id-display">ID: </p>
+                            <p id="profile-role-display">Role: </p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <button class="btn-primary" onclick="document.getElementById('profile-photo-input').click()">Change Photo</button>
+                        <input type="file" id="profile-photo-input" accept="image/*" style="display: none;" onchange="handleProfilePhotoUpload(event)">
+                    </div>
+                </div>
+
+                <div class="profile-details-card">
+                    <div class="detail-section">
+                        <h4>Personal Information</h4>
+                        <div class="detail-row">
+                            <span class="detail-label">Email:</span>
+                            <span id="profile-email-display">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Course:</span>
+                            <span id="profile-course-display">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Year Level:</span>
+                            <span id="profile-year-display">-</span>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h4>Account Information</h4>
+                        <div class="detail-row">
+                            <span class="detail-label">Account Type:</span>
+                            <span id="profile-account-type">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Remaining Sessions:</span>
+                            <span id="profile-sessions-display">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Member Since:</span>
+                            <span id="profile-member-since">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <section id="admin-dash" class="section">
+            <h2>Admin Dashboard</h2>
+            <div class="admin-nav-tabs">
+                <button class="admin-tab-btn active" onclick="showAdminTab('dashboard')">Dashboard</button>
+                <button class="admin-tab-btn" onclick="showAdminTab('students')">Students</button>
+                <button class="admin-tab-btn" onclick="showAdminTab('sitin')">Sit-in</button>
+                <button class="admin-tab-btn" onclick="showAdminTab('records')">View Records</button>
+                <button class="admin-tab-btn" onclick="showAdminTab('reports')">Sit-in Reports</button>
+                <button class="admin-tab-btn" onclick="showAdminTab('purposes')">Manage Purposes</button>
+                <button class="admin-tab-btn" onclick="showAdminTab('announcements')">Announcements</button>
+            </div>
+
+            <!-- DASHBOARD TAB -->
+            <div id="dashboard-tab" class="admin-tab-content active">
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <h3>Total Registered Students</h3>
+                        <p class="stat-number" id="total-students">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Sit-ins</h3>
+                        <p class="stat-number" id="total-sitins">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Active Sessions</h3>
+                        <p class="stat-number" id="active-sessions">0</p>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <h3>Sit-in Purpose Distribution</h3>
+                    <canvas id="purposeChart" width="200" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- STUDENTS TAB -->
+            <div id="students-tab" class="admin-tab-content">
+                <div class="students-header">
+                    <input type="text" id="student-search" placeholder="Search by ID or Name..." onkeyup="searchStudents()">
+                    <button class="btn-blue" onclick="openModal('add-student-admin-modal')">+ Add Student</button>
+                </div>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Course & Year</th>
+                            <th>Remaining Sessions</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="students-table-body">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- SIT-IN TAB -->
+            <div id="sitin-tab" class="admin-tab-content">
+                <h3>Process Student Sit-in</h3>
+                <div class="sitin-container">
+                    <div class="sitin-search-section">
+                        <input type="text" id="sitin-search-input" placeholder="Enter Student ID to search..." onkeyup="searchForSitIn()" maxlength="50">
+                    </div>
+                    <div id="sitin-results" class="sitin-results"></div>
+                </div>
+            </div>
+
+            <!-- VIEW RECORDS TAB -->
+            <div id="records-tab" class="admin-tab-content">
+                <h3>Active & Completed Sessions</h3>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Name</th>
+                            <th>Purpose</th>
+                            <th>Lab Room</th>
+                            <th>Login Time</th>
+                            <th>Logout Time</th>
+                            <th>Duration</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="records-table-body">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- REPORTS TAB -->
+            <div id="reports-tab" class="admin-tab-content">
+                <h3>Complete Sit-in Activity Log</h3>
+                <button class="btn-primary" onclick="generateExport()">Export as CSV</button>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Name</th>
+                            <th>Purpose</th>
+                            <th>Lab Room</th>
+                            <th>Login Time</th>
+                            <th>Logout Time</th>
+                            <th>Date</th>
+                            <th>Duration (mins)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reports-table-body">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- MANAGE PURPOSES TAB -->
+            <div id="purposes-tab" class="admin-tab-content">
+                <h3>Manage Sit-in Purposes/Topics</h3>
+                <p style="color: #666; margin-bottom: 20px;">Enable or disable which purposes are available for student sit-ins.</p>
+                <div id="purposes-list" class="purposes-list">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- ANNOUNCEMENTS TAB -->
+            <div id="announcements-tab" class="admin-tab-content">
+                <h3>Manage Lab Announcements</h3>
+                <p style="color: #666; margin-bottom: 20px;">Create and manage announcements visible to all students.</p>
+                <div class="announcement-form">
+                    <div class="form-group">
+                        <label for="announcement-title">Title:</label>
+                        <input type="text" id="announcement-title" placeholder="Announcement Title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="announcement-content">Content:</label>
+                        <textarea id="announcement-content" placeholder="Enter announcement details..." rows="4" required></textarea>
+                    </div>
+                    <button class="btn-primary" onclick="createAnnouncement()">Post Announcement</button>
+                </div>
+                <h4 style="margin-top: 30px;">Existing Announcements</h4>
+                <div id="admin-announcements-list" class="announcements-list">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
         </section>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </div> <!-- End of main-app -->
+
+    <div id="modal-overlay" class="overlay" onclick="closeAllModals()" style="display: none;"></div>
+
+    <div id="add-student-modal" class="modal">
+        <div class="modal-header">
+            <h3>Register New Student</h3>
+            <span class="close" onclick="closeModal('add-student-modal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <input type="text" placeholder="Student ID">
+            <input type="text" placeholder="Full Name">
+            <input type="text" placeholder="Course & Year">
+            <button class="btn-save" onclick="saveStudent()">Save to Database</button>
+        </div>
+    </div>
+
+    <div id="reserve-modal" class="modal">
+        <div class="modal-header">
+            <h3>Confirm Sit-in</h3>
+            <span class="close" onclick="closeModal('reserve-modal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p>Do you want to start a session for <strong>C Programming</strong>?</p>
+            <button class="btn-save" onclick="confirmSitIn()">Confirm Login</button>
+        </div>
+    </div>
+
+    <div id="feedback-modal" class="modal">
+        <div class="modal-header">
+            <h3>Submit Feedback</h3>
+            <span class="close" onclick="closeModal('feedback-modal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="feedback-session-id">
+            <label for="feedback-text">Your Feedback:</label>
+            <textarea id="feedback-text" placeholder="Please share your feedback about this session..." rows="5"></textarea>
+            <div style="margin-top: 10px; display: flex; gap: 10px;">
+                <button class="btn-save" onclick="submitFeedback()" style="flex: 1;">Submit Feedback</button>
+                <button class="btn-cancel" onclick="closeModal('feedback-modal')" style="flex: 1;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="add-student-admin-modal" class="modal">
+        <div class="modal-header">
+            <h3>Add New Student</h3>
+            <span class="close" onclick="closeModal('add-student-admin-modal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <input type="text" id="new-student-id" placeholder="Student ID" required>
+            <input type="text" id="new-student-name" placeholder="Full Name" required>
+            <input type="text" id="new-student-course" placeholder="Course & Year" required>
+            <input type="number" id="new-student-sessions" placeholder="Remaining Sessions" value="15" required>
+            <button class="btn-save" onclick="addNewStudent()">Add Student</button>
+        </div>
+    </div>
+
+    <div id="edit-student-modal" class="modal">
+        <div class="modal-header">
+            <h3>Edit Student</h3>
+            <span class="close" onclick="closeModal('edit-student-modal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="edit-student-id">
+            <input type="text" id="edit-student-name" placeholder="Full Name" required>
+            <input type="text" id="edit-student-course" placeholder="Course & Year" required>
+            <input type="number" id="edit-student-sessions" placeholder="Remaining Sessions" required>
+            <button class="btn-save" onclick="updateStudent()">Save Changes</button>
+        </div>
+    </div>
+
+    <div id="sitin-form-modal" class="modal">
+        <div class="modal-header">
+            <h3>Start Sit-in Session</h3>
+            <span class="close" onclick="closeModal('sitin-form-modal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="sitin-student-id">
+            <div style="background: #f9f9f9; padding: 10px; border-radius: 4px; margin-bottom: 15px;">
+                <p><strong>Name:</strong> <span id="sitin-student-name"></span></p>
+                <p><strong>Remaining Sessions:</strong> <span id="sitin-remaining-sessions"></span></p>
+            </div>
+            <div class="form-group">
+                <label for="sitin-purpose">Purpose:</label>
+                <select id="sitin-purpose" required>
+                    <option value="">Select Purpose</option>
+                    <option value="C Programming">C Programming</option>
+                    <option value="Java">Java</option>
+                    <option value="Python">Python</option>
+                    <option value="Web Development">Web Development</option>
+                    <option value="Data Structures">Data Structures</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sitin-lab">Lab Room:</label>
+                <select id="sitin-lab" required>
+                    <option value="">Select Lab Room</option>
+                    <option value="Lab 501">Lab 501</option>
+                    <option value="Lab 502">Lab 502</option>
+                    <option value="Lab 503">Lab 503</option>
+                    <option value="Lab 504">Lab 504</option>
+                </select>
+            </div>
+            <button class="btn-blue" onclick="startSitIn()" style="width: 100%; padding: 12px;">Sit In</button>
+        </div>
+    </div>
+
+    <div id="profile-edit-modal" class="modal">
+        <div class="modal-header">
+            <h3>Edit Profile</h3>
+            <span class="close" onclick="closeModal('profile-edit-modal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="profile-edit-section">
+                <h4>Profile Photo</h4>
+                <div class="photo-upload-area">
+                    <div class="photo-preview-container">
+                        <img id="photo-preview" src="" alt="Preview" class="photo-preview" style="display: none;">
+                        <div id="photo-preview-placeholder" class="photo-preview-placeholder">Click to upload photo</div>
+                    </div>
+                    <input type="file" id="profile-photo-input" accept="image/*" style="display: none;" onchange="handleProfilePhotoUpload()">
+                    <button class="btn-secondary" onclick="document.getElementById('profile-photo-input').click()" style="margin-top: 10px; width: 100%;">Choose Photo</button>
+                    <p style="font-size: 0.9em; color: #666; margin-top: 8px; text-align: center;">Max file size: 2MB • JPG, PNG formats</p>
+                </div>
+            </div>
+
+            <div class="profile-edit-section">
+                <h4>Personal Information</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label for="edit-profile-firstname">First Name:</label>
+                        <input type="text" id="edit-profile-firstname" placeholder="First Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-profile-lastname">Last Name:</label>
+                        <input type="text" id="edit-profile-lastname" placeholder="Last Name" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="edit-profile-email">Email Address:</label>
+                    <input type="email" id="edit-profile-email" placeholder="Email Address" required>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label for="edit-profile-course">Course:</label>
+                        <input type="text" id="edit-profile-course" placeholder="e.g., BSCS" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-profile-year">Year Level:</label>
+                        <select id="edit-profile-year" required>
+                            <option value="">Select Year Level</option>
+                            <option value="1st Year">1st Year</option>
+                            <option value="2nd Year">2nd Year</option>
+                            <option value="3rd Year">3rd Year</option>
+                            <option value="4th Year">4th Year</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-edit-section">
+                <h4>Change Password (Optional)</h4>
+                <div class="form-group">
+                    <label for="edit-profile-password">New Password:</label>
+                    <input type="password" id="edit-profile-password" placeholder="Leave blank to keep current password" minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="edit-profile-confirm-password">Confirm Password:</label>
+                    <input type="password" id="edit-profile-confirm-password" placeholder="Confirm new password" minlength="6">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn-save" onclick="saveProfileChanges()" style="flex: 1;">Save Changes</button>
+                <button class="btn-cancel" onclick="closeModal('profile-edit-modal')" style="flex: 1;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
